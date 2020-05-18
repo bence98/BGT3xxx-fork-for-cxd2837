@@ -225,7 +225,11 @@ static int __tda18271_write_regs(struct dvb_frontend *fe, int idx, int len,
 	 */
 	if (lock_i2c) {
 		tda18271_i2c_gate_ctrl(fe, 1);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
 		i2c_lock_adapter(priv->i2c_props.adap);
+#else
+		i2c_lock_bus(priv->i2c_props.adap, I2C_LOCK_ROOT_ADAPTER);
+#endif
 	}
 	while (len) {
 		if (max > len)
@@ -246,7 +250,11 @@ static int __tda18271_write_regs(struct dvb_frontend *fe, int idx, int len,
 		len -= max;
 	}
 	if (lock_i2c) {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
 		i2c_unlock_adapter(priv->i2c_props.adap);
+#else
+		i2c_unlock_bus(priv->i2c_props.adap, I2C_LOCK_ROOT_ADAPTER);
+#endif
 		tda18271_i2c_gate_ctrl(fe, 0);
 	}
 
@@ -300,7 +308,11 @@ int tda18271_init_regs(struct dvb_frontend *fe)
 	 * as those could cause bad things
 	 */
 	tda18271_i2c_gate_ctrl(fe, 1);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
 	i2c_lock_adapter(priv->i2c_props.adap);
+#else
+	i2c_lock_bus(priv->i2c_props.adap, I2C_LOCK_ROOT_ADAPTER);
+#endif
 
 	/* initialize registers */
 	switch (priv->id) {
@@ -516,7 +528,11 @@ int tda18271_init_regs(struct dvb_frontend *fe)
 	/* synchronize */
 	__tda18271_write_regs(fe, R_EP1, 1, false);
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 19, 0)
 	i2c_unlock_adapter(priv->i2c_props.adap);
+#else
+	i2c_unlock_bus(priv->i2c_props.adap, I2C_LOCK_ROOT_ADAPTER);
+#endif
 	tda18271_i2c_gate_ctrl(fe, 0);
 
 	return 0;
