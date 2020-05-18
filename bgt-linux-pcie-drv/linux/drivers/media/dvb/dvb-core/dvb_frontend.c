@@ -25,6 +25,7 @@
  * Or, point your browser to http://www.gnu.org/copyleft/gpl.html
  */
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 7, 0)
 /* Enables DVBv3 compatibility bits at the headers */
 #define __DVB_CORE__
 
@@ -2715,3 +2716,4 @@ void dvb_frontend_detach(struct dvb_frontend* fe)
 }
 #endif
 EXPORT_SYMBOL(dvb_frontend_detach);
+#endif

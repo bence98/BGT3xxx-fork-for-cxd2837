@@ -21,6 +21,7 @@
  *
  */
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3, 7, 0)
 #include <linux/sched.h>
 #include <linux/spinlock.h>
 #include <linux/slab.h>
@@ -1323,3 +1324,4 @@ void dvb_dmx_release(struct dvb_demux *dvbdemux)
 }
 
 EXPORT_SYMBOL(dvb_dmx_release);
+#endif
