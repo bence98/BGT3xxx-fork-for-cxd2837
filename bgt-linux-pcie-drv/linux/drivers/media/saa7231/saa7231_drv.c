@@ -42,12 +42,12 @@
 #include <linux/dvb/audio.h>
 #include <linux/dvb/osd.h>
 
-#include "dvbdev.h"
-#include "dvb_demux.h"
-#include "dmxdev.h"
-#include "dvb_frontend.h"
-#include "dvb_net.h"
-#include "dvb_ca_en50221.h"
+#include <media/dvbdev.h>
+#include <media/dvb_demux.h>
+#include <media/dmxdev.h>
+#include <media/dvb_frontend.h>
+#include <media/dvb_net.h>
+#include <media/dvb_ca_en50221.h>
 
 #include <linux/videodev2.h>
 #include <media/v4l2-common.h>

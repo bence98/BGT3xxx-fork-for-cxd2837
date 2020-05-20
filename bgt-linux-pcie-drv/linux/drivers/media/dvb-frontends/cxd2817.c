@@ -27,8 +27,8 @@
 #include <linux/mutex.h>
 
 #include <linux/dvb/frontend.h>
-#include "dvb_frontend.h"
-#include "dvb_math.h"
+#include <media/dvb_frontend.h>
+#include <media/dvb_math.h>
 
 #include "cxd2817.h"
 
@@ -1200,7 +1200,7 @@ out:
 }
 
 
-static int cxd2817_get_frontend_algo(struct dvb_frontend *fe)
+static enum dvbfe_algo cxd2817_get_frontend_algo(struct dvb_frontend *fe)
 {
 	return DVBFE_ALGO_CUSTOM;
 }
@@ -1259,8 +1259,8 @@ static enum dvbfe_search cxd2817_search(struct dvb_frontend *fe)
 		if (ret)
 			goto err;
 		dprintk(FE_DEBUG, 1, "Carrier OFFST=%d", offst);
-		if (fe->ops.tuner_ops.info.frequency_step) {
-			step = (fe->ops.tuner_ops.info.frequency_step + 500) / 1000;
+		if (fe->ops.tuner_ops.info.frequency_step_hz) {
+			step = (fe->ops.tuner_ops.info.frequency_step_hz + 500) / 1000;
 			step = (step + 1) / 2;
 			if (abs(offst) > step) {
 				props->frequency += (offst * 1000);
@@ -1285,9 +1285,9 @@ static struct dvb_frontend_ops cxd2817_ops = {
 	.delsys = { SYS_DVBT, SYS_DVBC_ANNEX_A },
 	.info = {
 		.name			= "Sony CXD2817",
-		.frequency_min		= 177000000,
-		.frequency_max		= 858000000,
-		.frequency_stepsize	= 166666,
+		.frequency_min_hz		= 177000000,
+		.frequency_max_hz		= 858000000,
+		.frequency_stepsize_hz	= 166666,
 
 		.caps = FE_CAN_FEC_1_2			|
 			FE_CAN_FEC_2_3			|

@@ -27,12 +27,12 @@
 #include <linux/interrupt.h>
 #include <linux/mutex.h>
 
-#include "dvbdev.h"
-#include "dvb_demux.h"
-#include "dmxdev.h"
-#include "dvb_frontend.h"
-#include "dvb_net.h"
-#include "dvb_ca_en50221.h"
+#include <media/dvbdev.h>
+#include <media/dvb_demux.h>
+#include <media/dmxdev.h>
+#include <media/dvb_frontend.h>
+#include <media/dvb_net.h>
+#include <media/dvb_ca_en50221.h>
 
 #include "saa7231_priv.h"
 #include "saa7231_dtl.h"

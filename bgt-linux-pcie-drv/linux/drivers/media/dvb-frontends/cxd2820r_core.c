@@ -322,7 +322,7 @@ static int cxd2820r_read_status(struct dvb_frontend *fe, fe_status_t *status)
 	return ret;
 }
 
-static int cxd2820r_get_frontend(struct dvb_frontend *fe)
+static int cxd2820r_get_frontend(struct dvb_frontend *fe, struct dtv_frontend_properties * prop)
 {
 	struct cxd2820r_priv *priv = fe->demodulator_priv;
 	int ret;
@@ -584,7 +584,7 @@ error:
 	return DVBFE_ALGO_SEARCH_ERROR;
 }
 
-static int cxd2820r_get_frontend_algo(struct dvb_frontend *fe)
+static enum dvbfe_algo cxd2820r_get_frontend_algo(struct dvb_frontend *fe)
 {
 	return DVBFE_ALGO_CUSTOM;
 }

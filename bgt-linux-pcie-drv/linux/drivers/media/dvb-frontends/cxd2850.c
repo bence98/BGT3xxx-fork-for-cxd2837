@@ -27,8 +27,8 @@
 
 #include "compat.h"
 #include <linux/dvb/frontend.h>
-#include "dvb_frontend.h"
-#include "dvb_math.h"
+#include <media/dvb_frontend.h>
+#include <media/dvb_math.h>
 
 #include "cxd2850.h"
 
@@ -1752,11 +1752,11 @@ static struct dvb_frontend_ops cxd2850_ops = {
 	.info = {
 		.name			= "CXD2850 Multistandard",
 
-		.frequency_min		= 950000,
-		.frequency_max 		= 2150000,
+		.frequency_min_hz		= 950000,
+		.frequency_max_hz 	= 2150000,
 
-		.frequency_stepsize	= 0,
-		.frequency_tolerance	= 0,
+		.frequency_stepsize_hz	= 0,
+		.frequency_tolerance_hz	= 0,
 
 		.symbol_rate_min 	= 1000000,
 		.symbol_rate_max 	= 45000000,

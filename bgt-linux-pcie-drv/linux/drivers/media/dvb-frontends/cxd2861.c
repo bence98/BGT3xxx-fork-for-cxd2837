@@ -26,8 +26,8 @@
 #include <linux/mutex.h>
 
 #include <linux/dvb/frontend.h>
-#include "dvb_frontend.h"
-#include "dvb_math.h"
+#include <media/dvb_frontend.h>
+#include <media/dvb_math.h>
 
 #include "cxd2861.h"
 
@@ -846,23 +846,22 @@ static int cxd2861_get_ifreq(struct dvb_frontend *fe, u32 *frequency)
 	return 0;
 }
 
-static int cxd2861_release(struct dvb_frontend *fe)
+static void cxd2861_release(struct dvb_frontend *fe)
 {
 	struct cxd2861_dev *cxd2861 = fe->tuner_priv;
 
 	BUG_ON(!cxd2861);
 	fe->tuner_priv = NULL;
 	kfree(cxd2861);
-	return 0;
 }
 
 static struct dvb_tuner_ops cxd2861_ops = {
 
 	.info = {
 		.name		= "CXD2861 Silicon Tuner",
-		.frequency_min  =  42000000,
-		.frequency_max  = 870000000,
-		.frequency_step	= 50000,
+		.frequency_min_hz  =  42000000,
+		.frequency_max_hz  = 870000000,
+		.frequency_step_hz = 50000,
 	},
 
 	.init			= cxd2861_init,
