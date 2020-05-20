@@ -1048,7 +1048,7 @@ fail:
 	return ret;
 }
 
-static int tda18271_release(struct dvb_frontend *fe)
+static void tda18271_release(struct dvb_frontend *fe)
 {
 	struct tda18271_priv *priv = fe->tuner_priv;
 
@@ -1060,8 +1060,6 @@ static int tda18271_release(struct dvb_frontend *fe)
 	mutex_unlock(&tda18271_list_mutex);
 
 	fe->tuner_priv = NULL;
-
-	return 0;
 }
 
 static int tda18271_get_frequency(struct dvb_frontend *fe, u32 *frequency)
@@ -1242,9 +1240,9 @@ static int tda18271_set_config(struct dvb_frontend *fe, void *priv_cfg)
 static const struct dvb_tuner_ops tda18271_tuner_ops = {
 	.info = {
 		.name = "NXP TDA18271HD",
-		.frequency_min  =  45000000,
-		.frequency_max  = 864000000,
-		.frequency_step =     62500
+		.frequency_min_hz  =  45000000,
+		.frequency_max_hz  = 864000000,
+		.frequency_step_hz =     62500
 	},
 	.init              = tda18271_init,
 	.sleep             = tda18271_sleep,
