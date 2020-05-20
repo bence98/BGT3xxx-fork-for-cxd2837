@@ -98,6 +98,7 @@ dvb-net-$(CONFIG_DVB_NET) := dvb_net.o
 cxd2820r-objs = cxd2820r_core.o cxd2820r_c.o cxd2820r_t.o cxd2820r_t2.o
 
 obj-$(CONFIG_DVB_TDA18272) += tda18272.o
+obj-$(CONFIG_DVB_STV090x) += stv090x.o
 obj-$(CONFIG_DVB_CXD2820R) += cxd2820r.o
 # obj-$(CONFIG_DVB_CXD2834) += cxd2834.o
 obj-$(CONFIG_DVB_CXD2850) += cxd2850.o

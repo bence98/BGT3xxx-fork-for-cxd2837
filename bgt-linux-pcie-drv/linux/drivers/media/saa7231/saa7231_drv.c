@@ -380,7 +380,7 @@ static struct s5h1411_config bgt3576_s5h1411_config = {
 	.qam_if		= S5H1411_IF_4000,
 	.inversion	= S5H1411_INVERSION_ON,
 	.status_mode	= S5H1411_DEMODLOCKING,
-	.mpeg_timing	= S5H1411_MPEGTIMING_CONTINOUS_NONINVERTING_CLOCK,
+	.mpeg_timing	= S5H1411_MPEGTIMING_CONTINUOUS_NONINVERTING_CLOCK,
 };
 
 static struct tda18271_std_map bgt3576_tda18271_atsc = {
@@ -459,7 +459,7 @@ static struct s5h1411_config purus_mpcie_s5h1411_config = {
 	.qam_if		= S5H1411_IF_4000,
 	.inversion	= S5H1411_INVERSION_ON,
 	.status_mode	= S5H1411_DEMODLOCKING,
-	.mpeg_timing	= S5H1411_MPEGTIMING_CONTINOUS_NONINVERTING_CLOCK,
+	.mpeg_timing	= S5H1411_MPEGTIMING_CONTINUOUS_NONINVERTING_CLOCK,
 };
 
 static struct tda18272_config bgt3620_tda18272_config[] = {

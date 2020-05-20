@@ -1444,7 +1444,7 @@ static int tda18272_set_params(struct dvb_frontend *fe)
 
 	if (status == 0x01) {
 		tda18272->frequency = freq;
-		if (fe->ops.info.type == FE_OFDM)
+//		if (fe->ops.info.type == FE_OFDM)  //FIXME
 			tda18272->bandwidth = bw;
 	}
 err:

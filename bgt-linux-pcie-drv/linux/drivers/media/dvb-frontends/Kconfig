@@ -19,6 +19,14 @@ menu "Customise DVB Frontends"
 comment "Multistandard (satellite) frontends"
 	depends on DVB_CORE
 
+config DVB_STV090x
+	tristate "STV0900/STV0903(A/B) based"
+	depends on DVB_CORE && I2C
+	default m if DVB_FE_CUSTOMISE
+	help
+	  DVB-S/S2/DSS Multistandard Professional/Broadcast demodulators.
+	  Say Y when you want to support these frontends.
+
 config DVB_CXD2850
 	tristate "Sony CXD2850"
 	depends on DVB_CORE && I2C
