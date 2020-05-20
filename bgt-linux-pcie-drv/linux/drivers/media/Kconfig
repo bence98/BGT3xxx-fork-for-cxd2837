@@ -118,7 +118,7 @@ source "drivers/media/video/Kconfig"
 # DVB adapters
 #
 
-source "drivers/media/dvb/Kconfig"
+source "drivers/media/dvb-frontends/Kconfig"
 
 #config DAB
 #	boolean "DAB adapters"

@@ -24,5 +24,5 @@ obj-$(CONFIG_MEDIA_TUNER_TDA18271) += tda18271.o
 #obj-$(CONFIG_MEDIA_TUNER_MXL5007T) += mxl5007t.o
 #obj-$(CONFIG_MEDIA_TUNER_MC44S803) += mc44s803.o
 
-EXTRA_CFLAGS += -Idrivers/media/dvb/dvb-core
-EXTRA_CFLAGS += -Idrivers/media/dvb/frontends
+EXTRA_CFLAGS += -Idrivers/media/dvb-core
+EXTRA_CFLAGS += -Idrivers/media/dvb-frontends

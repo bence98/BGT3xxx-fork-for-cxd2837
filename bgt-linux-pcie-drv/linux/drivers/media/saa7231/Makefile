@@ -24,4 +24,4 @@ saa7231_core-objs		:= saa7231_pci.o	\
 obj-$(CONFIG_SAA7231_CORE)	+= saa7231_core.o
 obj-$(CONFIG_SAA7231_DRV)	+= saa7231_drv.o
 
-EXTRA_CFLAGS = -Idrivers/media/dvb/dvb-core/
+EXTRA_CFLAGS = -Idrivers/media/dvb-core/
