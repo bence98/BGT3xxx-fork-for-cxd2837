@@ -86,8 +86,27 @@
 #include "a8290.h"
 #include "cxd2817.h"
 #include "cxd2861.h"
-
 #include "cxd2843.h"
+
+#include "tda826x.h"
+#include "isl6405.h"
+
+void do_i2c_scan(unsigned char busn, struct i2c_adapter* adap){
+		pr_info("i2c bus %d:\n", busn);
+		unsigned char buf;
+                struct i2c_client c={
+                        .name="saa7231 scanner",
+                        .adapter=adap
+                };
+		unsigned int i;
+                for ( i = 0; i < 128; i++) {
+                        c.addr = i;
+                        int rc = i2c_master_recv(&c,&buf,0);
+                        if (rc < 0) continue;
+                        pr_info("i2c %d scan: found device @ 0x%x\n", busn, i << 1);
+                }
+		pr_info("i2c %d scan done\n", busn);
+}
 
 static unsigned int verbose;
 static unsigned int int_type;
@@ -99,7 +118,7 @@ MODULE_PARM_DESC(verbose, "verbose startup messages, default is 1 (yes)");
 MODULE_PARM_DESC(int_type, "force Interrupt Handler type: 0=INT-A, 1=MSI, 2=MSI-X. default INT-A mode");
 
 #define DRIVER_NAME				"SAA7231"
-#define DRIVER_VER				"0.0.93"
+#define DRIVER_VER				"0.0.94"
 #define MODULE_DBG				(((saa7231)->verbose == SAA7231_DEBUG) ? 1 : 0)
 
 extern void saa7231_dump_write(struct saa7231_dev *saa7231);
@@ -327,6 +346,17 @@ static struct tda18271_config bgt3575_tda18271_config = {
 	.gate		= TDA18271_GATE_DIGITAL,
 };
 
+static struct tda18271_std_map ctx1910_tda18271_dvbt = {
+	.dvbt_6 = { .if_freq = 3300, .agc_mode = 3, .std = 4, .if_lvl = 1, .rfagc_top = 0x37 },
+	.dvbt_7 = { .if_freq = 3800, .agc_mode = 3, .std = 5, .if_lvl = 1, .rfagc_top = 0x37 },
+	.dvbt_8 = { .if_freq = 4300, .agc_mode = 3, .std = 6, .if_lvl = 1, .rfagc_top = 0x37 },
+};
+
+static struct tda18271_config ctx1910_tda18271_config = {
+	.std_map	= &ctx1910_tda18271_dvbt,
+	.gate		= TDA18271_GATE_DIGITAL,
+};
+
 static struct stv090x_config bgt3575_stv090x_config = {
 	.device			= STV0903,
 	.demod_mode		= STV090x_SINGLE,
@@ -539,6 +569,11 @@ static struct cxd2843_cfg bgt3602_cxd2843_cfg = {
 #define BLACKGOLD_BGT3636		0x3636
 
 
+#define CREATIX                         "Creatix"
+#define CREATIX_VENDOR                  0x16be
+#define CREATIX_CTX1910                 0x0002
+
+
 #define SUBVENDOR_ALL			0x0000
 #define SUBDEVICE_ALL			0x0000
 
@@ -568,7 +603,8 @@ enum {
 			BGT3685,			 
 			BGT3695,			 
 			BGT3696,			 
-			BGT3636
+			BGT3636,
+                        CTX1910
 };		
 //#define PURUS_PCIE			0
 //#define PURUS_MPCIE			1
@@ -612,6 +648,8 @@ static struct card_desc saa7231_desc[] = {
 	MAKE_DESC(BLACKGOLD,	"BGT3695",	"Dual DVB-T + Analog"),
 	MAKE_DESC(BLACKGOLD,	"BGT3696",	"Dual ATSC + Analog"),
 	MAKE_DESC(BLACKGOLD,	"BGT3636",	"DVB-S/S2 + DVB-T/T2/C + Analog"),
+
+	MAKE_DESC(CREATIX,	"CTX1910",	"DVB-S + DVB-T + Analog"),
 	
 	{ }
 };
@@ -714,11 +752,18 @@ static int saa7231_frontend_enable(struct saa7231_dev *saa7231)
 		if (saa7231_gpio_reset(saa7231, GPIO_2, 50) < 0)
 			ret = -EIO;
 		break;
-    case SUBSYS_INFO(BLACKGOLD_TECHNOLOGY, BLACKGOLD_BGT3602):
-        GPIO_SET_OUT(GPIO_2);
-        if (saa7231_gpio_reset(saa7231, GPIO_2, 50) < 0)
-            ret = -EIO;
-        break;
+        case SUBSYS_INFO(BLACKGOLD_TECHNOLOGY, BLACKGOLD_BGT3602):
+                GPIO_SET_OUT(GPIO_2);
+                if (saa7231_gpio_reset(saa7231, GPIO_2, 50) < 0)
+                    ret = -EIO;
+                break;
+	case SUBSYS_INFO(CREATIX_VENDOR, CREATIX_CTX1910):
+		GPIO_SET_OUT(GPIO_1 | GPIO_2);
+		if (saa7231_gpio_reset(saa7231, GPIO_1, 50) < 0)
+			ret = -EIO;
+		if (saa7231_gpio_reset(saa7231, GPIO_2, 50) < 0)
+			ret = -EIO;
+		break;
 	}
 	return ret;
 }
@@ -1152,6 +1197,32 @@ static int saa7231_frontend_attach(struct saa7231_dvb *dvb, int frontend)
 
 		ret = 0;
 		break;
+	case SUBSYS_INFO(CREATIX_VENDOR, CREATIX_CTX1910):
+		do_i2c_scan(0, &i2c_0->i2c_adapter);
+                do_i2c_scan(1, &i2c_1->i2c_adapter);
+                do_i2c_scan(2, &i2c_2->i2c_adapter);
+
+		pr_info("dvb->fe=%x\nfrontend=%d\n", (unsigned int)dvb->fe, frontend);
+
+//		dvb->fe = dvb_attach(tda826x_attach,
+//				     dvb->fe, //FIXME: it's probably NULL!
+//				     0x60, //TODO
+//				     &i2c_1->i2c_adapter,
+//				     0);
+
+//		if (!dvb->fe) {
+//			dprintk(SAA7231_ERROR, 1, "Frontend:%d attach failed", frontend);
+//			ret = -ENODEV;
+//			goto exit;
+//		}
+
+//		dvb_attach(tda18271_attach,
+//			   dvb->fe,
+//			   0x60,
+//			   &i2c_1->i2c_adapter,
+//			   &ctx1910_tda18271_config);
+		ret = 0;
+		break;
 	}
 exit:
 	return ret;
@@ -1409,6 +1480,27 @@ static struct saa7231_config purus_blackgold_bgt3602 = {
 
         .stream_ports           = 2,
 };
+static struct saa7231_config purus_creatix_ctx1910 = {
+
+	.desc			= DEVICE_DESC(CTX1910),
+
+	.a_tvc			= 1,
+	.v_cap			= 1,
+	.a_cap			= 1,
+
+	.xtal			= 54,
+	.i2c_rate		= SAA7231_I2C_RATE_100,
+	.root_clk		= CLK_ROOT_54MHz,
+	.irq_handler		= saa7231_irq_handler,
+
+        .ts0_cfg                = 0x41,
+        .ts0_clk                = 0x01, //change from 05
+        .ts1_cfg                = 0x41,
+        .ts1_clk                = 0x01, //change from 05
+	.frontend_enable	= saa7231_frontend_enable,
+	.frontend_attach	= saa7231_frontend_attach,
+	.stream_ports		= 2,
+};
 
 static struct pci_device_id saa7231_pci_table[] = {
 
@@ -1424,6 +1516,8 @@ static struct pci_device_id saa7231_pci_table[] = {
 	MAKE_ENTRY(BLACKGOLD_TECHNOLOGY, BLACKGOLD_BGT3651, SAA7231, &purus_blackgold_bgt3651),
 	MAKE_ENTRY(BLACKGOLD_TECHNOLOGY, BLACKGOLD_BGT3636, SAA7231, &purus_blackgold_bgt3636),
 	MAKE_ENTRY(BLACKGOLD_TECHNOLOGY, BLACKGOLD_BGT3602, SAA7231, &purus_blackgold_bgt3602),
+
+	MAKE_ENTRY(CREATIX_VENDOR, CREATIX_CTX1910, SAA7231, &purus_creatix_ctx1910),
 
 	MAKE_ENTRY(SUBVENDOR_ALL, SUBDEVICE_ALL, SAA7231, &purus_blackgold_bgt3576),
 	MAKE_ENTRY(SUBVENDOR_ALL, SUBDEVICE_ALL, SAA7231, &purus_blackgold_bgt3575),
